@@ -6,11 +6,13 @@ pragma solidity ^0.5.0;
 
 contract EventTickets {
 
+
     /*
         Create a public state variable called owner.
         Use the appropriate keyword to create an associated getter function.
         Use the appropriate keyword to allow ether transfers.
      */
+    address public payable owner;
 
     uint   TICKET_PRICE = 100 wei;
 
@@ -20,6 +22,15 @@ contract EventTickets {
         Choose the appropriate variable type for each field.
         The "buyers" field should keep track of addresses and how many tickets each buyer purchases.
     */
+    struct Event{
+      bytes32 description,
+      bytes32 website,
+      uint totalTickets,
+      uint sales,
+      //may be other way around
+      mapping(address => uint) public buyers,
+      bool isOpen
+    }
 
     Event myEvent;
 
