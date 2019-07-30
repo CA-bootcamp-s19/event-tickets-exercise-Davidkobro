@@ -14,6 +14,11 @@ contract EventTickets {
      */
     address public payable owner;
 
+
+    function getOwner() public view returns(address){
+        return owner; 
+    }
+
     uint   TICKET_PRICE = 100 wei;
 
     /*
@@ -27,7 +32,6 @@ contract EventTickets {
       bytes32 website,
       uint totalTickets,
       uint sales,
-      //may be other way around
       mapping(address => uint) public buyers,
       bool isOpen
     }
@@ -40,28 +44,44 @@ contract EventTickets {
         LogGetRefund should provide information about the refund requester and the number of tickets refunded.
         LogEndSale should provide infromation about the contract owner and the balance transferred to them.
     */
+     event LogBuyTickets(address indexed buyerAddress, uint ticketsPurchased);
+    event LogGetRefund(address indexed buyerAddress, uint ticketsRefunded);
+    event LogEndSale(address indexed buyerAddress, uint totalSales);
 
     /*
         Create a modifier that throws an error if the msg.sender is not the owner.
     */
 
+    modifier isOwner() {
+        require (msg.sender == owner, "correct owner");
+        _;
+
+    }
     /*
         Define a constructor.
         The constructor takes 3 arguments, the description, the URL and the number of tickets for sale.
         Set the owner to the creator of the contract.
         Set the appropriate myEvent details.
     */
+     constructor(string memory _description, string memory _URL, uint _totalTickets) public{
+        owner = msg.sender;
+        myEvent.description = _description;
+        myEvent.website = _URL;
+        myEvent.totalTickets = _totalTickets;
+        myEvent.isOpen = true;
+    }
+
+    }
 
     /*
         Define a function called readEvent() that returns the event details.
         This function does not modify state, add the appropriate keyword.
         The returned details should be called description, website, uint totalTickets, uint sales, bool isOpen in that order.
     */
-    function readEvent()
-        public
+    function readEvent() public view
         returns(string memory description, string memory website, uint totalTickets, uint sales, bool isOpen)
     {
-
+        return (myEvent.description, myEvent.website, myEvent.totalTickets, myEvent.sales, myEvent.isOpen);
     }
 
     /*
@@ -69,6 +89,9 @@ contract EventTickets {
         This function takes 1 argument, an address and
         returns the number of tickets that address has purchased.
     */
+    function getBuyerTicketCount(address _buyerAddress) public view returns(uint){
+        return myEvent.buyers[_buyerAddress];
+    }
 
     /*
         Define a function called buyTickets().
