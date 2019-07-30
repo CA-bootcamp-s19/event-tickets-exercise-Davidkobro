@@ -36,8 +36,8 @@ contract EventTickets {
         LogGetRefund should provide information about the refund requester and the number of tickets refunded.
         LogEndSale should provide infromation about the contract owner and the balance transferred to them.
     */
-    event LogBuyTickets(address purchaser, uint noOfTickets);
-    event LogGetRefund(address refundRequester, uint noOfTickets);
+    event LogBuyTickets(address purchaser, uint numTickets);
+    event LogGetRefund(address refundRequester, uint numTickets);
     event LogEndSale(address owner, uint balance);
     /*
         Create a modifier that throws an error if the msg.sender is not the owner.
@@ -92,15 +92,15 @@ contract EventTickets {
             - refund any surplus value sent with the transaction
             - emit the appropriate event
     */
-    function buyTickets(uint noOfTickets) public payable {
+    function buyTickets(uint numTickets) public payable {
         require(myEvent.isOpen, "Event is not open");
-        require(msg.value >= noOfTickets * TICKET_PRICE, "Transaction value insufficient");
-        require(myEvent.totalTickets >= noOfTickets, "Insufficient stock of tickets left");
-        myEvent.buyers[msg.sender] += noOfTickets;
-        myEvent.totalTickets -= noOfTickets;
-        myEvent.sales += noOfTickets;
-        msg.sender.transfer(msg.value - noOfTickets * TICKET_PRICE);
-        emit LogBuyTickets(msg.sender, noOfTickets);
+        require(msg.value >= numTickets * TICKET_PRICE, "Transaction value insufficient");
+        require(myEvent.totalTickets >= numTickets, "Insufficient stock of tickets left");
+        myEvent.buyers[msg.sender] += numTickets;
+        myEvent.totalTickets -= numTickets;
+        myEvent.sales += numTickets;
+        msg.sender.transfer(msg.value - numTickets * TICKET_PRICE);
+        emit LogBuyTickets(msg.sender, numTickets);
     }
     /*
         Define a function called getRefund().
@@ -113,12 +113,12 @@ contract EventTickets {
     */
     function getRefund() public {
         require(myEvent.buyers[msg.sender] > 0, "Requester not purchased any ticket");
-        uint noOfTickets = myEvent.buyers[msg.sender];
-        myEvent.totalTickets += noOfTickets;
-        myEvent.sales -= noOfTickets;
+        uint numTickets = myEvent.buyers[msg.sender];
+        myEvent.totalTickets += numTickets;
+        myEvent.sales -= numTickets;
         myEvent.buyers[msg.sender] = 0;
-        msg.sender.transfer(noOfTickets * TICKET_PRICE);
-        emit LogGetRefund(msg.sender, noOfTickets);
+        msg.sender.transfer(numTickets * TICKET_PRICE);
+        emit LogGetRefund(msg.sender, numTickets);
     }
     /*
         Define a function called endSale().
